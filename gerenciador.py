@@ -4,6 +4,35 @@ import json
 import os
 
 # Funções
+
+def carregar_produtos():
+    if os.path.exists("produtos.json"):
+        with open("produtos.json", "r", encoding="utf-8") as arquivo:
+            return json.load (arquivo)
+    return []
+
+produtos = carregar_produtos()
+print (f"Produtos carregados: {len(produtos)} encontrado(s).")
+
+def salvar_produtos():
+    with open("produtos.json", "w", encoding="utf-8") as arquivo:
+        json.dump(produtos, arquivo, indent=4, ensure_ascii=False)
+
+def editar_produto():
+    global produtos
+    nome = input("Digite o nome do produto a editar: ")
+    for produto in produtos:
+        if produto["nome"].lower() == nome.lower():
+            print(f"Produto atual: {produto['nome']} - R${produto['preco']} x {produto['quantidade']}")
+            novo_preco = float(input("Novo preço: "),2)
+            nova_quantidade = int(input("Nova quantidade: "))
+            produto["preco"] = novo_preco
+            produto["quantidade"] = nova_quantidade
+            salvar_produtos()
+            print(f"Produto '{nome}' atualizado com sucesso.")
+            return
+    print("Produto não encontrado.")
+
 def mostrar_menu():
     print ("\n=== GERENCIADOR DE PRODUTOS ===")
     print ("1- Adicionar produto")
@@ -13,9 +42,15 @@ def mostrar_menu():
     print ("5- Editar produto")
     print ("6- Sair")
 
+def calcular_total_estoque():
+    total = 0
+    for produto in produtos:
+        total += produto["preco"] * produto["quantidade"]
+    print(f"Valor total em estoque: R${total:.2f}")
+
 def adicionar_produto():
     nome=input("Nome do Produto: ")
-    preco=float(input("Preço: "))
+    preco=round(float(input("Preço: ")),2)
     quantidade=int(input("Quantidade: "))
     produto = {"nome":nome, "preco":preco, "quantidade":quantidade}
     produtos.append(produto)
@@ -39,40 +74,6 @@ def remover_produto():
             print(f"Produto '{nome}' removido.")
             return
     print("Produto não encontrado.")
-
-def calcular_total_estoque():
-    total = 0
-    for produto in produtos:
-        total += produto["preco"] * produto["quantidade"]
-    print(f"Valor total em estoque: R${total:.2f}")
-
-def carregar_produtos():
-    if os.path.exists("produtos.json"):
-        with open("produtos.json", "r", encoding="utf-8") as arquivo:
-            return json.load (arquivo)
-    return []
-
-def salvar_produtos():
-    with open("produtos.json", "w", encoding="utf-8") as arquivo:
-        json.dump(produtos, arquivo, indent=4, ensure_ascii=False)
-
-def editar_produto():
-    global produtos
-    nome = input("Digite o nome do produto a editar: ")
-    for produto in produtos:
-        if produto["nome"].lower() == nome.lower():
-            print(f"Produto atual: {produto['nome']} - R${produto['preco']} x {produto['quantidade']}")
-            novo_preco = float(input("Novo preço: "))
-            nova_quantidade = int(input("Nova quantidade: "))
-            produto["preco"] = novo_preco
-            produto["quantidade"] = nova_quantidade
-            salvar_produtos()
-            print(f"Produto '{nome}' atualizado com sucesso.")
-            return
-    print("Produto não encontrado.")
-
-produtos = carregar_produtos()
-print (f"Produtos carregados: {len(produtos)} encontrado(s).")
 
 # Programa principal
 while True:
